@@ -10,7 +10,7 @@
   "scripts": {
     "build": "rm -rf dist && tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "release": "npm run build && standard-version && git push --follow-tags && npm publish"
+    "release": "npm run build && git push --follow-tags && npm publish"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -28,6 +28,7 @@
   "homepage": "https://github.com/Nico2433/utils#readme",
   "devDependencies": {
     "eslint": "^8.57.0",
+    "release-please": "^16.10.0",
     "typescript": "^5.4.2",
     "typescript-eslint": "^7.1.1"
   }
