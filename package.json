@@ -1,0 +1,34 @@
+{
+  "name": "@nico2433/utils",
+  "version": "1.0.0",
+  "description": "Some utils for projects",
+  "main": "dist/index.umd.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "release": "npm run build && standard-version && git push --follow-tags && npm publish"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Nico2433/utils.git"
+  },
+  "author": "nico2433",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Nico2433/utils/issues"
+  },
+  "homepage": "https://github.com/Nico2433/utils#readme",
+  "devDependencies": {
+    "eslint": "^8.57.0",
+    "typescript": "^5.4.2",
+    "typescript-eslint": "^7.1.1"
+  }
+}
