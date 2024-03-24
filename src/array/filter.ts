@@ -1,9 +1,9 @@
+import type { Filter } from ".";
 import { compareValues } from ".";
-import type { FilterOnArrayParams } from "./types";
 
-export const filterOnArray = <T>(
+export const filterArray = <T>(
   array: T[],
-  { property, checkValue, exclude }: FilterOnArrayParams<T>
+  { property, checkValue, exclude }: Filter<T>
 ): T[] => {
   if (checkValue) {
     if (!exclude)
