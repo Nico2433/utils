@@ -42,6 +42,27 @@ export const yearsToMs = (years: number): number => {
   return secondsToMs(seconds);
 };
 
+// *---------- MONTHS ----------* //
+
+export const monthsToMs = (months: number): number => {
+  const weeks = monthsToWeeks(months);
+  const days = weeksToDays(weeks);
+  const hours = daysToHours(days);
+  const minutes = hoursToMinutes(hours);
+  const seconds = minutesToSeconds(minutes);
+  return secondsToMs(seconds);
+};
+
+// *---------- WEEKS ----------* //
+
+export const weeksToMs = (weeks: number): number => {
+  const days = weeksToDays(weeks);
+  const hours = daysToHours(days);
+  const minutes = hoursToMinutes(hours);
+  const seconds = minutesToSeconds(minutes);
+  return secondsToMs(seconds);
+};
+
 // *---------- DAYS ----------* //
 
 export const daysToMs = (days: number): number => {
@@ -53,7 +74,7 @@ export const daysToMs = (days: number): number => {
 
 // *---------- HOURS ----------* //
 
-export const hoursToMs = (hours: number) => {
+export const hoursToMs = (hours: number): number => {
   const minutes = hoursToMinutes(hours);
   const seconds = minutesToSeconds(minutes);
   return secondsToMs(seconds);

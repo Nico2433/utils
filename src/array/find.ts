@@ -1,24 +1,19 @@
-import { compareValues } from ".";
-import type { Filter } from "./types";
-
-export const findArrayIndex = <T>(
-  array: T[],
-  { property, checkValue }: Filter<T>
-): number => {
-  return checkValue
-    ? array.findIndex((obj) =>
-        compareValues(obj[property], checkValue.value, checkValue.filterOp)
-      )
-    : array.findIndex((obj) => obj[property]);
-};
+import type { Find } from "./types";
 
 export const findOnArray = <T>(
   array: T[],
-  { property, checkValue }: Filter<T>
+  { property, value }: Find<T>
 ): T | undefined => {
-  return checkValue
-    ? array.find((obj) =>
-        compareValues(obj[property], checkValue.value, checkValue.filterOp)
-      )
+  return value
+    ? array.find((obj) => obj[property] === value)
     : array.find((obj) => obj[property]);
+};
+
+export const findIndexOnArray = <T>(
+  array: T[],
+  { property, value }: Find<T>
+): number => {
+  return value
+    ? array.findIndex((obj) => obj[property] === value)
+    : array.findIndex((obj) => obj[property]);
 };
