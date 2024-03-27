@@ -12,9 +12,8 @@ export const addToArray = <T>(
     return array;
   }
 
-  const newArray = array.slice();
-  newArray.splice(idx, 0, data);
-  return newArray;
+  array.splice(idx, 0, data);
+  return array;
 };
 
 export const addToArraySimple = <T>(array: T[], value: T): T[] => {
@@ -24,7 +23,6 @@ export const addToArraySimple = <T>(array: T[], value: T): T[] => {
     return array;
   }
 
-  const newArray = array.slice();
-  newArray.splice(idx, 0, value);
-  return newArray;
+  array.splice(idx, 0, value);
+  return array;
 };

@@ -12,7 +12,7 @@ export const removeFromArray = <T>(
   }
 
   array.splice(idx, 1);
-  return array.slice();
+  return array;
 };
 
 export const removeFromArraySimple = <T>(array: T[], value: T): T[] => {
@@ -23,5 +23,5 @@ export const removeFromArraySimple = <T>(array: T[], value: T): T[] => {
   }
 
   array.splice(idx, 1);
-  return array.slice();
+  return array;
 };

@@ -7,4 +7,4 @@ export * from "./add";
 export * from "./filter";
 export * from "./find";
 export * from "./remove";
-export * from "./sortBy";
+export * from "./sort";

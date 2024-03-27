@@ -1,10 +1,8 @@
 export const sortByArray = <T>(
   array: T[],
   sortBy: keyof T,
-  order: "asc" | "desc"
+  order: "asc" | "desc" = "asc"
 ): T[] => {
-  const sortedArray = [...array];
-
   const compareFn = (a: T, b: T): number => {
     const aValue = a[sortBy];
     const bValue = b[sortBy];
@@ -20,7 +18,16 @@ export const sortByArray = <T>(
     }
   };
 
-  sortedArray.sort(compareFn);
+  array.sort(compareFn);
 
-  return sortedArray;
+  return array;
+};
+
+export const sortNumberArray = (
+  array: number[],
+  order: "asc" | "desc" = "asc"
+): number[] => {
+  return order === "asc"
+    ? array.sort((a, b) => a - b)
+    : array.sort((a, b) => b - a);
 };

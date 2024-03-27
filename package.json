@@ -2,7 +2,7 @@
   "name": "@nico2433/utils",
   "version": "1.0.3",
   "description": "Some utils for projects",
-  "main": "dist/index.js",
+  "main": "dist/index.mjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -11,13 +11,14 @@
   "exports": {
     ".": {
       "import": "./dist/index.js",
-      "require": "./dist/index.js",
+      "require": "./dist/index.mjs",
       "types": "./dist/index.d.ts"
     }
   },
   "scripts": {
-    "build": "rm -rf dist && tsc",
-    "release": "npm run build && standard-version && git push --follow-tags && npm publish"
+    "build": "tsup",
+    "release": "pnpm run build && standard-version && git push --follow-tags && pnpm publish",
+    "dev": "tsx src/test/index.ts"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -34,8 +35,11 @@
   },
   "homepage": "https://github.com/Nico2433/utils#readme",
   "devDependencies": {
+    "@types/node": "^20.11.30",
     "eslint": "^8.57.0",
     "standard-version": "^9.5.0",
+    "tsup": "^8.0.2",
+    "tsx": "^4.7.1",
     "typescript": "^5.4.2",
     "typescript-eslint": "^7.1.1"
   }
