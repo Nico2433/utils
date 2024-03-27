@@ -1,6 +1,6 @@
 {
   "name": "@nico2433/utils",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Some utils for projects",
   "main": "dist/index.mjs",
   "module": "dist/index.js",
