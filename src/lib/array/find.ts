@@ -17,3 +17,11 @@ export const findIndexOnArray = <T>(
     ? array.findIndex((obj) => obj[property] === value)
     : array.findIndex((obj) => obj[property]);
 };
+
+export const findOnArraySimple = <T>(array: T[], value: T): T | undefined => {
+  return array.find((item) => item === value);
+};
+
+export const findIndexOnArraySimple = <T>(array: T[], value: T): number => {
+  return array.findIndex((item) => item === value);
+};
