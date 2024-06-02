@@ -13,7 +13,7 @@ export interface Filter<T> extends ArrayFc<T> {
 }
 
 export interface FilterSimple<T> {
-  checkValue?: {
+  checkValue: {
     filterOp: FilterOp;
     value: T;
   };
