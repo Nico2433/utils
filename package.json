@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "release": "node --run build && standard-version && git push --follow-tags && npm publish",
+    "release": "npm run build && standard-version && git push --follow-tags && npm publish",
     "dev": "tsx src/test/index.ts"
   },
   "publishConfig": {
