@@ -1,0 +1,22 @@
+{
+  "ignorePatterns": ["node_modules", "dist", "tsup.config.*"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  },
+  "overrides": [
+    // Configuration for TypeScript files
+    {
+      "parser": "@typescript-eslint/parser",
+      "files": ["*.ts"],
+      "plugins": ["@typescript-eslint"],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      },
+      "rules": {
+        "@typescript-eslint/consistent-type-imports": "error", // Ensure `import type` is used when it's necessary
+        "@typescript-eslint/no-unused-vars": "warn"
+      }
+    }
+  ]
+}
