@@ -1,7 +1,7 @@
 {
   "name": "@nico2433/utils",
   "version": "1.0.7",
-  "description": "Some utils for node projects",
+  "description": "Some utils for javascript projects",
   "main": "dist/index.mjs",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build": "tsup",
-    "release": "pnpm run build && standard-version && git push --follow-tags && pnpm publish",
+    "release": "node --run build && standard-version && git push --follow-tags && npm publish",
     "dev": "tsx src/test/index.ts"
   },
   "publishConfig": {

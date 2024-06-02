@@ -12,6 +12,14 @@ export interface Filter<T> extends ArrayFc<T> {
   exclude?: boolean;
 }
 
+export interface FilterSimple<T> {
+  checkValue?: {
+    filterOp: FilterOp;
+    value: T;
+  };
+  exclude?: boolean;
+}
+
 export interface Search<T> extends ArrayFc<T> {
   value: T[keyof T];
 }

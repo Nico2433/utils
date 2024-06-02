@@ -1,4 +1,4 @@
-import type { Filter } from ".";
+import type { Filter, FilterSimple } from ".";
 import { compareValues } from ".";
 
 export const filterArray = <T>(
@@ -19,4 +19,18 @@ export const filterArray = <T>(
     if (!exclude) return array.filter((obj) => obj[property]);
     return array.filter((obj) => !obj[property]);
   }
+};
+
+export const filterArraySimple = <T>(
+  array: T[],
+  { checkValue, exclude }: FilterSimple<T>
+) => {
+  if (!exclude)
+    return array.filter((val) =>
+      compareValues(val, checkValue.value, checkValue.filterOp)
+    );
+
+  return array.filter(
+    (val) => !compareValues(val, checkValue.value, checkValue.filterOp)
+  );
 };
