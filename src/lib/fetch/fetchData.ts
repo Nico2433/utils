@@ -1,6 +1,5 @@
-import { FetchError } from "./errors";
-import { getStatusError } from "./status";
-import type { FetchData } from "./types";
+import type { FetchData } from ".";
+import { FetchError, getStatusError } from ".";
 
 export const fetchData: FetchData = async (
   url,

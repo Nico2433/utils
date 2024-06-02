@@ -1,4 +1,4 @@
-import { FETCH_STATUS } from "./status";
+import { FETCH_STATUS } from ".";
 
 export class FetchError extends Error {
   status: FETCH_STATUS;
