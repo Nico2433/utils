@@ -60,36 +60,64 @@ forEachObj({ a: 1 }, (value, { key, index }) => {});
 ## Fetch
 
 ```ts
-import { fetchData, FetchError, FETCH_STATUS } from "@nico2433/utils";
+import { createFetchData, fetchData, FetchError, FETCH_STATUS } from "@nico2433/utils";
 
 const user = await fetchData<User>("/api/users/1");
 await fetchData("/api/users", { method: "POST", body: { name: "Ana" } }); // sent as JSON
 
+// Query params: null/undefined are skipped, arrays repeat the key
+await fetchData("/api/users", { query: { page: 2, tag: ["a", "b"], q: search || undefined } });
+
+// Fails with FETCH_STATUS.TIMEOUT after 5s
+await fetchData("/api/slow", { timeout: 5000 });
+
 // Skips the request and resolves with null when the condition is false
 const maybe = await fetchData<User>("/api/me", undefined, isLoggedIn);
+```
 
+Reusable client with defaults (base URL, headers, query, timeout, any `RequestInit` option). Per-call options override them:
+
+```ts
+const api = createFetchData({
+  baseUrl: "https://api.example.com/v1",
+  headers: { authorization: `Bearer ${token}` },
+  timeout: 10_000,
+});
+
+await api<User[]>("/users", { query: { page: 1 } }); // https://api.example.com/v1/users?page=1
+```
+
+Every failure is a `FetchError` (except your own `AbortController` aborts, which are rethrown untouched so you can ignore them):
+
+```ts
 try {
-  await fetchData("/api/missing");
+  await api("/users", { method: "POST", body: form });
 } catch (err) {
-  if (err instanceof FetchError && err.status === FETCH_STATUS.NOT_FOUND) {
-    // err.statusCode === 404
+  if (err instanceof FetchError) {
+    err.status; // FETCH_STATUS: INVALID (400/422), UNAUTHORIZED, FORBIDDEN, NOT_FOUND, CONFLICT, TIMEOUT, ERROR
+    err.statusCode; // 409, or undefined for network errors and timeouts
+    err.data; // parsed error body, e.g. { message: "email taken" }
   }
 }
 ```
 
 - Plain objects and arrays are sent as JSON. `FormData`, `URLSearchParams`, `Blob` and strings are sent untouched.
-- Empty responses (e.g. `204`) resolve with `null`.
+- Responses are parsed by `content-type`: JSON for `*json`, text otherwise. Empty responses (e.g. `204`) resolve with `null`.
+- `GET`/`HEAD` with a `body` throws a `TypeError` before sending anything.
 
 ## String
 
 ```ts
-import { assembleStringWSpaces, camelCaseDivider, capitalize, cleanString } from "@nico2433/utils";
+import { capitalize, camelCaseDivider, cleanString, cn, concat } from "@nico2433/utils";
+
+cn("btn", isActive && "btn-active", { "btn-lg": large, "btn-sm": !large }); // "btn btn-active btn-lg"
+cn("a", "", null, ["b", ["c"]]); // "a b c"
+concat("/users/", id && `${id}`); // only string parts, no separator
 
 capitalize("hello"); // "Hello" (typed as "Hello")
 capitalize("hello world", true); // "Hello World"
 cleanString("  a   b "); // "a b"
 camelCaseDivider("helloWorld", true); // "Hello world"
-assembleStringWSpaces("btn", isActive && "btn-active"); // "btn btn-active" or "btn"
 ```
 
 ## Time
