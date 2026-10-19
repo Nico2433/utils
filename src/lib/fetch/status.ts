@@ -1,13 +1,15 @@
-export enum FETCH_STATUS {
-  INACTIVE,
-  LOADING,
-  SUCCESS,
-  INVALID,
-  UNAUTHORIZED,
-  NOT_FOUND,
-  CONFLICT,
-  ERROR,
-}
+export const FETCH_STATUS = {
+  INACTIVE: 0,
+  LOADING: 1,
+  SUCCESS: 2,
+  INVALID: 3,
+  UNAUTHORIZED: 4,
+  NOT_FOUND: 5,
+  CONFLICT: 6,
+  ERROR: 7,
+} as const;
+
+export type FETCH_STATUS = (typeof FETCH_STATUS)[keyof typeof FETCH_STATUS];
 
 const STATUS_ERRORS: Record<number, FETCH_STATUS> = {
   400: FETCH_STATUS.INVALID,
