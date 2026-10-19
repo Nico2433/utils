@@ -1,0 +1,4 @@
+{
+  // Tests are TypeScript run by node:test, so Node needs tsx to load them
+  "jestrunner.nodeTestRunOptions": ["--import", "tsx"]
+}
