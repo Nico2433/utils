@@ -1,5 +1,5 @@
-import type { Search } from ".";
-import { searchIndexOnArray, searchIndexOnArraySimple } from ".";
+import type { Search } from "./types";
+import { searchIndexOnArray, searchIndexOnArraySimple } from "./search";
 
 /** Inserts `data` keeping `array` sorted by `property`, skipping duplicates. Mutates `array`. */
 export const addToArray = <T, K extends keyof T>(

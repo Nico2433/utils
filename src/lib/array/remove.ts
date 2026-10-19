@@ -1,5 +1,5 @@
-import type { Search } from ".";
-import { searchIndexOnArray, searchIndexOnArraySimple } from ".";
+import type { Search } from "./types";
+import { searchIndexOnArray, searchIndexOnArraySimple } from "./search";
 
 /** Removes the item matching `value` from an array sorted by `property`. Mutates `array`. */
 export const removeFromArray = <T, K extends keyof T>(

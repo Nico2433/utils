@@ -1,5 +1,5 @@
-import type { Filter, FilterSimple } from ".";
-import { compareValues } from ".";
+import type { Filter, FilterSimple } from "./types";
+import { compareValues } from "./utils";
 
 /** Keeps items whose `property` passes `checkValue` (or is truthy when omitted). `exclude` inverts it. */
 export const filterArray = <T, K extends keyof T>(

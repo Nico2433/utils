@@ -11,7 +11,7 @@ const binarySearch = <T, V>(
 
   while (start <= end) {
     const middle = Math.floor((start + end) / 2);
-    const current = getValue(array[middle]);
+    const current = getValue(array[middle] as T);
 
     if (current === value) return middle;
     if (current < value) start = middle + 1;
