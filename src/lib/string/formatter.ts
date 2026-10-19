@@ -1,11 +1,11 @@
-import { camelCasePattern, extraSpacesPattern } from ".";
+import { camelCasePattern, extraSpacesPattern } from "./patterns";
 
 const upperFirst = (word: string): string =>
   word.charAt(0).toUpperCase() + word.slice(1);
 
 /** Capitalizes the first letter, or every word's first letter when `all` is true. */
 export function capitalize<S extends string>(text: S, all?: false): Capitalize<S>;
-export function capitalize(text: string, all: true): string;
+export function capitalize(text: string, all?: boolean): string;
 export function capitalize(text: string, all?: boolean): string {
   return all ? text.split(" ").map(upperFirst).join(" ") : upperFirst(text);
 }
@@ -21,6 +21,7 @@ export const camelCaseDivider = (
   all?: boolean
 ): string =>
   text
+    .trim()
     .split(camelCasePattern)
     .map((word, index) =>
       capitalize && (all || index === 0)

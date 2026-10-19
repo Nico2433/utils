@@ -1,5 +1,6 @@
-import type { FetchData } from ".";
-import { FetchError, getStatusError } from ".";
+import type { FetchData } from "./types";
+import { FetchError } from "./errors";
+import { getStatusError } from "./status";
 
 export const fetchData: FetchData = async (
   url,
@@ -40,5 +41,11 @@ export const fetchData: FetchData = async (
 
   // Empty bodies (e.g. 204 No Content) would make res.json() throw
   const text = await res.text();
-  return text ? JSON.parse(text) : null;
+  if (!text) return null;
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    throw new FetchError(`[Invalid JSON]: ${text}`, undefined, res.status);
+  }
 };
