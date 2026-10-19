@@ -7,6 +7,8 @@ export const FETCH_STATUS = {
   NOT_FOUND: 5,
   CONFLICT: 6,
   ERROR: 7,
+  FORBIDDEN: 8,
+  TIMEOUT: 9,
 } as const;
 
 export type FETCH_STATUS = (typeof FETCH_STATUS)[keyof typeof FETCH_STATUS];
@@ -14,8 +16,11 @@ export type FETCH_STATUS = (typeof FETCH_STATUS)[keyof typeof FETCH_STATUS];
 const STATUS_ERRORS: Record<number, FETCH_STATUS> = {
   400: FETCH_STATUS.INVALID,
   401: FETCH_STATUS.UNAUTHORIZED,
+  403: FETCH_STATUS.FORBIDDEN,
   404: FETCH_STATUS.NOT_FOUND,
+  408: FETCH_STATUS.TIMEOUT,
   409: FETCH_STATUS.CONFLICT,
+  422: FETCH_STATUS.INVALID,
 };
 
 export const getStatusError = (resStatus: number): FETCH_STATUS =>
