@@ -9,40 +9,12 @@ export enum FETCH_STATUS {
   ERROR,
 }
 
-export const getStatusError = (resStatus: number): FETCH_STATUS => {
-  let status: FETCH_STATUS | undefined;
-
-  switch (resStatus) {
-    case 400:
-      {
-        status = FETCH_STATUS.INVALID;
-      }
-      break;
-
-    case 401:
-      {
-        status = FETCH_STATUS.UNAUTHORIZED;
-      }
-      break;
-
-    case 404:
-      {
-        status = FETCH_STATUS.NOT_FOUND;
-      }
-      break;
-
-    case 409:
-      {
-        status = FETCH_STATUS.CONFLICT;
-      }
-      break;
-
-    default:
-      {
-        status = FETCH_STATUS.ERROR;
-      }
-      break;
-  }
-
-  return status;
+const STATUS_ERRORS: Record<number, FETCH_STATUS> = {
+  400: FETCH_STATUS.INVALID,
+  401: FETCH_STATUS.UNAUTHORIZED,
+  404: FETCH_STATUS.NOT_FOUND,
+  409: FETCH_STATUS.CONFLICT,
 };
+
+export const getStatusError = (resStatus: number): FETCH_STATUS =>
+  STATUS_ERRORS[resStatus] ?? FETCH_STATUS.ERROR;

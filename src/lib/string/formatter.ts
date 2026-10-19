@@ -1,36 +1,30 @@
 import { camelCasePattern, extraSpacesPattern } from ".";
 
-export const capitalize = (text: string, all?: boolean): string => {
-  return all
-    ? text
-        .split(" ")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ")
-    : text.charAt(0).toUpperCase() + text.slice(1);
-};
+const upperFirst = (word: string): string =>
+  word.charAt(0).toUpperCase() + word.slice(1);
 
-export const cleanString = (text: string): string => {
-  return text.trim().replace(extraSpacesPattern, " ");
-};
+/** Capitalizes the first letter, or every word's first letter when `all` is true. */
+export function capitalize<S extends string>(text: S, all?: false): Capitalize<S>;
+export function capitalize(text: string, all: true): string;
+export function capitalize(text: string, all?: boolean): string {
+  return all ? text.split(" ").map(upperFirst).join(" ") : upperFirst(text);
+}
 
+/** Trims and collapses repeated whitespace into single spaces. */
+export const cleanString = (text: string): string =>
+  text.trim().replace(extraSpacesPattern, " ");
+
+/** Splits camelCase into lowercase words, e.g. "helloWorld" -> "hello world". */
 export const camelCaseDivider = (
   text: string,
   capitalize?: boolean,
   all?: boolean
-): string => {
-  const words = text.split(camelCasePattern);
-
-  const result = words.map((word, index) => {
-    if (capitalize) {
-      return all
-        ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        : index === 0
-        ? word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-        : word.toLowerCase();
-    } else {
-      return word.toLowerCase();
-    }
-  });
-
-  return result.join(" ");
-};
+): string =>
+  text
+    .split(camelCasePattern)
+    .map((word, index) =>
+      capitalize && (all || index === 0)
+        ? upperFirst(word.toLowerCase())
+        : word.toLowerCase()
+    )
+    .join(" ");

@@ -1,16 +1,14 @@
 {
   "compilerOptions": {
-    "module": "CommonJS",
+    "module": "Preserve",
+    "moduleResolution": "Bundler",
     "target": "ES2022",
-    "sourceMap": true,
     "lib": ["ES2022"],
-    "outDir": "./dist",
-    "noImplicitAny": true,
-    "declaration": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules"]
+  "include": ["src/**/*"]
 }

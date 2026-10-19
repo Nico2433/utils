@@ -22,8 +22,10 @@
   },
   "scripts": {
     "build": "tsup",
-    "release": "npm run build && standard-version && git push --follow-tags && npm publish",
-    "dev": "tsx src/test/index.ts"
+    "typecheck": "tsc",
+    "lint": "eslint .",
+    "test": "tsx --test \"src/**/*.test.ts\"",
+    "release": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && commit-and-tag-version && git push --follow-tags && pnpm publish"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -40,13 +42,18 @@
   },
   "homepage": "https://github.com/Nico2433/utils#readme",
   "devDependencies": {
-    "@types/node": "^20.11.30",
-    "eslint": "^8.57.0",
-    "standard-version": "^9.5.0",
-    "tsup": "^8.0.2",
-    "tsx": "^4.7.1",
-    "typescript": "^5.4.2",
-    "@typescript-eslint/eslint-plugin": "^5.62.0",
-    "@typescript-eslint/parser": "^5.62.0"
-  }
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^22.20.5",
+    "commit-and-tag-version": "^13.3.0",
+    "eslint": "^10.13.0",
+    "tsup": "^9.0.0",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.71.2"
+  },
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22"
+  },
+  "type": "commonjs"
 }

@@ -1,27 +1,19 @@
 import type { Search } from ".";
 import { searchIndexOnArray, searchIndexOnArraySimple } from ".";
 
-export const removeFromArray = <T>(
+/** Removes the item matching `value` from an array sorted by `property`. Mutates `array`. */
+export const removeFromArray = <T, K extends keyof T>(
   array: T[],
-  { property, value }: Search<T>
+  { property, value }: Search<T, K>
 ): T[] => {
   const idx = searchIndexOnArray(array, { property, value });
-
-  if (idx === -1) {
-    return array;
-  }
-
-  array.splice(idx, 1);
+  if (idx !== -1) array.splice(idx, 1);
   return array;
 };
 
+/** Removes `value` from a sorted array. Mutates `array`. */
 export const removeFromArraySimple = <T>(array: T[], value: T): T[] => {
   const idx = searchIndexOnArraySimple(array, value);
-
-  if (idx === -1) {
-    return array;
-  }
-
-  array.splice(idx, 1);
+  if (idx !== -1) array.splice(idx, 1);
   return array;
 };

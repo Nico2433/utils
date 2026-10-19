@@ -1,31 +1,24 @@
-import type { IncomingHttpHeaders } from "http";
+export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
-export interface FetchDataOptParams {
-  method?: "GET" | "POST" | "PUT" | "DELETE";
+export type HttpHeaders = Record<string, string>;
+
+export interface FetchDataOptParams
+  extends Omit<RequestInit, "method" | "headers" | "body"> {
+  method?: HttpMethod;
   headers?: HttpHeaders;
-  body?: {} | [] | string;
-  [key: string]: unknown;
+  /** Plain objects and arrays are sent as JSON. */
+  body?: RequestInit["body"] | object;
 }
 
-type RemoveIndexSignature<T> = {
-  [K in keyof T as string extends K
-    ? never
-    : number extends K
-    ? never
-    : symbol extends K
-    ? never
-    : K]: T[K];
-};
-
-type HttpDefaultHeaders = RemoveIndexSignature<IncomingHttpHeaders>;
-
-export interface HttpHeaders extends HttpDefaultHeaders {}
-
+/**
+ * Resolves with the parsed JSON body, or `null` when the response is empty (e.g. 204).
+ * When `condition` is false, no request is made and it resolves with `null`.
+ */
 export type FetchData = {
-  <T>(url: string, optParams?: FetchDataOptParams): Promise<T>;
+  <T>(url: string | URL, optParams?: FetchDataOptParams): Promise<T>;
   <T>(
-    url: string,
-    optParams?: FetchDataOptParams,
-    condition?: boolean
+    url: string | URL,
+    optParams: FetchDataOptParams | undefined,
+    condition: boolean
   ): Promise<T | null>;
 };

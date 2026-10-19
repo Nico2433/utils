@@ -1,26 +1,22 @@
-export const mapObj = <T extends Record<string, any>>(
-  obj: T,
-  callback: (
-    value: T[keyof T],
-    metadata: { key: string; index: number; obj: T }
-  ) => T[keyof T]
-): T => {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value], index) => [
-      key,
-      callback(value, { key, index, obj }),
-    ])
-  ) as T;
-};
+import type { ObjKey, ObjMetadata } from "./types";
 
-export const mapObjToArr = <T extends Record<string, any>, U>(
+/** Maps every value of `obj`, keeping its keys. */
+export const mapObj = <T extends object, U>(
   obj: T,
-  callback: (
-    value: T[keyof T],
-    metadata: { key: string; index: number; obj: T }
-  ) => U
-): U[] => {
-  return Object.entries(obj).map(([key, value], index) =>
-    callback(value, { key, index, obj })
+  callback: (value: T[ObjKey<T>], metadata: ObjMetadata<T>) => U
+): Record<ObjKey<T>, U> =>
+  Object.fromEntries(
+    (Object.keys(obj) as ObjKey<T>[]).map((key, index) => [
+      key,
+      callback(obj[key], { key, index, obj }),
+    ])
+  ) as Record<ObjKey<T>, U>;
+
+/** Maps every value of `obj` into an array. */
+export const mapObjToArr = <T extends object, U>(
+  obj: T,
+  callback: (value: T[ObjKey<T>], metadata: ObjMetadata<T>) => U
+): U[] =>
+  (Object.keys(obj) as ObjKey<T>[]).map((key, index) =>
+    callback(obj[key], { key, index, obj })
   );
-};

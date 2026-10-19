@@ -6,46 +6,39 @@ export const fetchData: FetchData = async (
   optParams = {},
   condition = true
 ) => {
+  if (!condition) return null;
+
   const { method = "GET", headers, body, ...rest } = optParams;
 
-  if (condition) {
-    const config = {
-      method,
-      headers,
-      body,
-      ...rest,
-    };
+  // Copy so the caller's headers object is never mutated
+  const config = { ...rest, method, headers: { ...headers }, body };
 
-    if (method === "POST" || method === "PUT") {
-      const isForm = body instanceof FormData;
-      const isJson =
-        !isForm && (Array.isArray(body) || typeof body === "object");
+  if (method !== "GET" && body !== undefined) {
+    // Only plain objects/arrays: FormData, Blob, URLSearchParams... go through untouched
+    const isJson =
+      Array.isArray(body) ||
+      (typeof body === "object" &&
+        body !== null &&
+        [Object.prototype, null].includes(Object.getPrototypeOf(body)));
+    const hasContentType = Object.keys(config.headers).some(
+      (key) => key.toLowerCase() === "content-type"
+    );
 
-      const contentType = isJson ? "application/json" : null;
-
-      if (!config.headers?.["content-type"] && contentType) {
-        if (!config.headers) config.headers = {};
-        config.headers["content-type"] = contentType;
-      }
-
-      config.body = isForm
-        ? body
-        : isJson
-        ? JSON.stringify(body)
-        : typeof body === "string" && body;
+    if (isJson) {
+      if (!hasContentType) config.headers["content-type"] = "application/json";
+      config.body = JSON.stringify(body);
     }
-
-    const res = await fetch(url, config as RequestInit);
-
-    if (!res.ok) {
-      const status = res.status;
-      const errMessage = `[Error ${status}]: ${await res.text()}`;
-      throw new FetchError(errMessage, getStatusError(status));
-    }
-
-    const data = await res.json();
-    return data;
-  } else {
-    return null;
   }
+
+  const res = await fetch(url, config as RequestInit);
+
+  if (!res.ok) {
+    const status = res.status;
+    const errMessage = `[Error ${status}]: ${await res.text()}`;
+    throw new FetchError(errMessage, getStatusError(status), status);
+  }
+
+  // Empty bodies (e.g. 204 No Content) would make res.json() throw
+  const text = await res.text();
+  return text ? JSON.parse(text) : null;
 };

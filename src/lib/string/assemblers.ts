@@ -1,13 +1,9 @@
-export const assembleString = (
-  ...string: (string | boolean | null | undefined)[]
-) => {
-  const filteredString = string.filter((str) => typeof str === "string");
-  return filteredString.join("");
-};
+type StringPart = string | boolean | null | undefined;
 
-export const assembleStringWSpaces = (
-  ...string: (string | boolean | null | undefined)[]
-) => {
-  const filteredString = string.filter((str) => typeof str === "string");
-  return filteredString.join(" ");
-};
+/** Joins only the string parts, so `cond && "text"` can be passed inline. */
+export const assembleString = (...parts: StringPart[]): string =>
+  parts.filter((part) => typeof part === "string").join("");
+
+/** Like `assembleString`, separating parts with spaces. */
+export const assembleStringWSpaces = (...parts: StringPart[]): string =>
+  parts.filter((part) => typeof part === "string").join(" ");

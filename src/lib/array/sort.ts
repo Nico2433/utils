@@ -1,33 +1,23 @@
+import type { SortOrder } from "./types";
+
+/** Sorts by `sortBy`. Mutates `array`. */
 export const sortByArray = <T>(
   array: T[],
   sortBy: keyof T,
-  order: "asc" | "desc" = "asc"
+  order: SortOrder = "asc"
 ): T[] => {
-  const compareFn = (a: T, b: T): number => {
-    const aValue = a[sortBy];
-    const bValue = b[sortBy];
+  const dir = order === "asc" ? 1 : -1;
 
-    if (order === "asc") {
-      if (aValue < bValue) return -1;
-      if (aValue > bValue) return 1;
-      return 0;
-    } else {
-      if (aValue > bValue) return -1;
-      if (aValue < bValue) return 1;
-      return 0;
-    }
-  };
-
-  array.sort(compareFn);
-
-  return array;
+  return array.sort((a, b) => {
+    if (a[sortBy] < b[sortBy]) return -dir;
+    if (a[sortBy] > b[sortBy]) return dir;
+    return 0;
+  });
 };
 
+/** Sorts numerically. Mutates `array`. */
 export const sortNumberArray = (
   array: number[],
-  order: "asc" | "desc" = "asc"
-): number[] => {
-  return order === "asc"
-    ? array.sort((a, b) => a - b)
-    : array.sort((a, b) => b - a);
-};
+  order: SortOrder = "asc"
+): number[] =>
+  array.sort(order === "asc" ? (a, b) => a - b : (a, b) => b - a);
