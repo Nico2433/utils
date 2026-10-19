@@ -10,41 +10,42 @@ Works with ESM and CommonJS. Requires Node.js 22+ (or any runtime with `fetch`).
 
 ## Array
 
+Every array function works with primitives and objects. Pass a property as `by` to compare that property; omit it to compare the items themselves. The value's type follows `by`, so mismatches fail at compile time.
+
+None of them mutate the array they receive: they always return a new one.
+
 ```ts
-import {
-  addToArray,
-  filterArray,
-  findOnArray,
-  removeFromArray,
-  searchOnArray,
-  sortByArray,
-} from "@nico2433/utils";
+import { filterArray, findOnArray, sortArray } from "@nico2433/utils";
 
 const users = [
   { id: 1, name: "Ana", active: true },
   { id: 2, name: "Leo", active: false },
 ];
 
-findOnArray(users, { property: "active", value: false }); // { id: 2, ... }
-findOnArray(users, { property: "id", value: "1" }); // ❌ type error: `id` is a number
+findOnArray(users, false, "active"); // { id: 2, ... }
+findOnArray(users, "1", "id"); // ❌ type error: `id` is a number
+findOnArray(["a", "b"], "b"); // "b"
 
-filterArray(users, { property: "id", checkValue: { filterOp: ">=", value: 2 } });
-filterArray(users, { property: "active", exclude: true }); // falsy `active`
+filterArray(users, { by: "id", op: ">=", value: 2 });
+filterArray(users, { by: "active", op: "===", value: true, exclude: true });
+filterArray([1, 2, 3], { op: "<", value: 3 }); // [1, 2]
 
-sortByArray(users, "name", "desc");
+sortArray(users, { by: "name", order: "desc" });
+sortArray([10, 2, 1]); // [1, 2, 10] (numeric, not lexicographic)
 ```
 
-Sorted-array helpers use binary search, so the array **must already be sorted ascending** by that property:
+Sorted-array helpers use binary search, so the array **must already be sorted ascending** (by `by` when given):
 
 ```ts
-searchOnArray(users, { property: "id", value: 2 });
-addToArray(users, { id: 3, name: "Sol", active: true }, { property: "id", value: 3 }); // skips duplicates
-removeFromArray(users, { property: "id", value: 1 });
+import { addToArray, insertIndexOnArray, removeFromArray, searchIndexOnArray, searchOnArray } from "@nico2433/utils";
+
+searchOnArray(users, 2, "id"); // { id: 2, ... }
+searchIndexOnArray([1, 3, 5], 4); // -1
+insertIndexOnArray([1, 3, 5], 4); // 2
+addToArray(users, { id: 3, name: "Sol", active: true }, "id"); // inserted in order, skips duplicates
+addToArray([1, 3], 2); // [1, 2, 3]
+removeFromArray(users, 1, "id");
 ```
-
-Every function has a `*Simple` variant for arrays of primitives (`findOnArraySimple`, `addToArraySimple`, ...).
-
-> `add*`, `remove*` and `sort*` mutate the array they receive and return it.
 
 ## Object
 

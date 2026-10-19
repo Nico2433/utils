@@ -1,17 +1,18 @@
-import type { Search } from "./types";
+import type { By, ByValue } from "./types";
+import { getBy } from "./utils";
 
 // Returns the index of `value`, or `~insertionIndex` (always negative) when missing
-const binarySearch = <T, V>(
-  array: T[],
-  value: V,
-  getValue: (item: T) => V
+const binarySearch = <T, K extends By<T>>(
+  array: readonly T[],
+  value: ByValue<T, K>,
+  by?: K
 ): number => {
   let start = 0;
   let end = array.length - 1;
 
   while (start <= end) {
     const middle = Math.floor((start + end) / 2);
-    const current = getValue(array[middle] as T);
+    const current = getBy(array[middle] as T, by);
 
     if (current === value) return middle;
     if (current < value) start = middle + 1;
@@ -21,43 +22,29 @@ const binarySearch = <T, V>(
   return ~start;
 };
 
-/** Binary search: `array` must be sorted ascending by `property`. */
-export const searchOnArray = <T, K extends keyof T>(
-  array: T[],
-  { property, value }: Search<T, K>
+/** Binary search: `array` must be sorted ascending (by `by` when given). */
+export const searchOnArray = <T, K extends By<T> = undefined>(
+  array: readonly T[],
+  value: ByValue<T, K>,
+  by?: K
 ): T | undefined => {
-  const idx = binarySearch(array, value, (obj) => obj[property]);
+  const idx = binarySearch(array, value, by);
   return idx >= 0 ? array[idx] : undefined;
 };
 
-/**
- * Binary search: `array` must be sorted ascending by `property`.
- * When missing, returns -1, or the index where it should be inserted if `insertIdx` is true.
- */
-export const searchIndexOnArray = <T, K extends keyof T>(
-  array: T[],
-  { property, value }: Search<T, K>,
-  insertIdx?: boolean
-): number => {
-  const idx = binarySearch(array, value, (obj) => obj[property]);
-  return idx >= 0 ? idx : insertIdx ? ~idx : -1;
-};
+/** Binary search: `array` must be sorted ascending. Returns -1 when missing. */
+export const searchIndexOnArray = <T, K extends By<T> = undefined>(
+  array: readonly T[],
+  value: ByValue<T, K>,
+  by?: K
+): number => Math.max(binarySearch(array, value, by), -1);
 
-/** Binary search: `array` must be sorted ascending. */
-export const searchOnArraySimple = <T>(array: T[], value: T): T | undefined => {
-  const idx = binarySearch(array, value, (item) => item);
-  return idx >= 0 ? array[idx] : undefined;
-};
-
-/**
- * Binary search: `array` must be sorted ascending.
- * When missing, returns -1, or the index where it should be inserted if `insertIdx` is true.
- */
-export const searchIndexOnArraySimple = <T>(
-  array: T[],
-  value: T,
-  insertIdx?: boolean
+/** Index where `value` is, or where it should be inserted to keep `array` sorted. */
+export const insertIndexOnArray = <T, K extends By<T> = undefined>(
+  array: readonly T[],
+  value: ByValue<T, K>,
+  by?: K
 ): number => {
-  const idx = binarySearch(array, value, (item) => item);
-  return idx >= 0 ? idx : insertIdx ? ~idx : -1;
+  const idx = binarySearch(array, value, by);
+  return idx >= 0 ? idx : ~idx;
 };

@@ -4,44 +4,37 @@ import {
   FETCH_STATUS,
   FetchError,
   addToArray,
-  addToArraySimple,
   assembleString,
+  assembleStringWSpaces,
+  camelCaseDivider,
+  capitalize,
   cleanString,
   compareValues,
   daysToHours,
-  filterArraySimple,
+  daysToMs,
+  fetchData,
+  filterArray,
   findIndexOnArray,
-  findIndexOnArraySimple,
-  findOnArraySimple,
+  findOnArray,
   forEachObj,
   getStatusError,
   hoursToMinutes,
+  insertIndexOnArray,
+  mapObj,
   mapObjToArr,
   minutesToMs,
   minutesToSeconds,
+  monthsToMs,
   monthsToWeeks,
-  removeFromArraySimple,
+  removeFromArray,
   searchIndexOnArray,
-  searchOnArraySimple,
+  searchOnArray,
   secondsToMs,
-  sortByArray,
-  sortNumberArray,
+  sortArray,
   weeksToDays,
   weeksToMs,
   yearsToDays,
   yearsToMonths,
-  assembleStringWSpaces,
-  camelCaseDivider,
-  fetchData,
-  filterArray,
-  findOnArray,
-  mapObj,
-  removeFromArray,
-  searchOnArray,
-  capitalize,
-  daysToMs,
-  monthsToMs,
-  searchIndexOnArraySimple,
   yearsToMs,
 } from "../lib";
 
@@ -51,22 +44,91 @@ const users = [
   { id: 3, active: true },
 ];
 
-test("find matches falsy values", () => {
-  assert.deepEqual(findOnArray(users, { property: "active", value: false }), users[1]);
+const ids = (list: { id: number }[]) => list.map((u) => u.id);
+
+test("find works by property and on primitives", () => {
+  assert.equal(findOnArray(users, false, "active"), users[1]);
+  assert.equal(findOnArray(users, 9, "id"), undefined);
+  assert.equal(findOnArray(users, users[2]!), users[2]);
+  assert.equal(findOnArray(["a", "b"], "b"), "b");
+  assert.equal(findOnArray(["a"], "z"), undefined);
+  assert.equal(findIndexOnArray(users, 3, "id"), 2);
+  assert.equal(findIndexOnArray(users, 9, "id"), -1);
+  assert.equal(findIndexOnArray(["a", "b"], "b"), 1);
 });
 
-test("binary search, add and remove keep sorted arrays", () => {
-  assert.equal(searchOnArray(users, { property: "id", value: 3 }), users[2]);
-  assert.deepEqual(addToArraySimple([1, 3, 5], 4), [1, 3, 4, 5]);
-  assert.deepEqual(addToArraySimple([1, 3], 3), [1, 3]);
-  assert.deepEqual(removeFromArray([...users], { property: "id", value: 2 }).map((u) => u.id), [1, 3]);
+test("filter compares by property or the items themselves", () => {
+  assert.deepEqual(ids(filterArray(users, { by: "id", op: ">=", value: 2 })), [2, 3]);
+  assert.deepEqual(ids(filterArray(users, { by: "id", op: ">=", value: 2, exclude: true })), [1]);
+  assert.deepEqual(ids(filterArray(users, { by: "active", op: "===", value: true })), [1, 3]);
+  assert.deepEqual(filterArray([1, 2, 3, 4], { op: "<", value: 3 }), [1, 2]);
+  assert.deepEqual(filterArray([1, 2, 3], { op: "===", value: 2, exclude: true }), [1, 3]);
+  assert.deepEqual(filterArray([] as number[], { op: ">", value: 0 }), []);
 });
 
-test("filter with operator and exclude", () => {
-  const opts = { property: "id" as const, checkValue: { filterOp: ">=" as const, value: 2 } };
-  assert.deepEqual(filterArray(users, opts).map((u) => u.id), [2, 3]);
-  assert.deepEqual(filterArray(users, { ...opts, exclude: true }).map((u) => u.id), [1]);
+test("binary search by property and on primitives", () => {
+  assert.equal(searchOnArray(users, 3, "id"), users[2]);
+  assert.equal(searchOnArray(users, 4, "id"), undefined);
+  assert.equal(searchOnArray([1, 2, 3], 2), 2);
+  assert.equal(searchOnArray([1, 3], 2), undefined);
+  assert.equal(searchOnArray([] as number[], 1), undefined);
+  assert.equal(searchIndexOnArray(users, 2, "id"), 1);
+  assert.equal(searchIndexOnArray(users, 4, "id"), -1);
+  assert.equal(searchIndexOnArray([1, 3], 2), -1);
+  assert.equal(searchIndexOnArray([1, 3], 0), -1);
 });
+
+test("insert index points where a value belongs", () => {
+  assert.equal(insertIndexOnArray([] as number[], 1), 0);
+  assert.equal(insertIndexOnArray([2, 3], 1), 0);
+  assert.equal(insertIndexOnArray([1, 3], 2), 1);
+  assert.equal(insertIndexOnArray([1, 2], 3), 2);
+  assert.equal(insertIndexOnArray([1, 2], 2), 1);
+  assert.equal(insertIndexOnArray(users, 4, "id"), 3);
+});
+
+test("add keeps arrays sorted, skips duplicates and does not mutate", () => {
+  const nums = [1, 3, 5];
+  assert.deepEqual(addToArray(nums, 4), [1, 3, 4, 5]);
+  assert.deepEqual(addToArray(nums, 0), [0, 1, 3, 5]);
+  assert.deepEqual(addToArray(nums, 9), [1, 3, 5, 9]);
+  assert.deepEqual(addToArray(nums, 3), [1, 3, 5]);
+  assert.deepEqual(addToArray([], 1), [1]);
+  assert.deepEqual(nums, [1, 3, 5]);
+
+  const list = [{ id: 1 }, { id: 3 }];
+  assert.deepEqual(ids(addToArray(list, { id: 2 }, "id")), [1, 2, 3]);
+  assert.deepEqual(ids(addToArray(list, { id: 3 }, "id")), [1, 3]);
+  assert.notEqual(addToArray(list, { id: 3 }, "id"), list);
+  assert.deepEqual(ids(list), [1, 3]);
+});
+
+test("remove drops the matching item and does not mutate", () => {
+  const nums = [1, 2, 3];
+  assert.deepEqual(removeFromArray(nums, 2), [1, 3]);
+  assert.deepEqual(removeFromArray(nums, 9), [1, 2, 3]);
+  assert.notEqual(removeFromArray(nums, 9), nums);
+  assert.deepEqual(nums, [1, 2, 3]);
+
+  assert.deepEqual(ids(removeFromArray(users, 2, "id")), [1, 3]);
+  assert.equal(users.length, 3);
+});
+
+test("sort by property or items, both orders, without mutating", () => {
+  const list = [{ n: 2 }, { n: 1 }, { n: 3 }];
+  assert.deepEqual(sortArray(list, { by: "n" }).map((x) => x.n), [1, 2, 3]);
+  assert.deepEqual(sortArray(list, { by: "n", order: "desc" }).map((x) => x.n), [3, 2, 1]);
+  assert.deepEqual(list.map((x) => x.n), [2, 1, 3]);
+
+  const nums = [10, 2, 1];
+  assert.deepEqual(sortArray(nums), [1, 2, 10]);
+  assert.deepEqual(sortArray(nums, { order: "desc" }), [10, 2, 1]);
+  assert.deepEqual(sortArray(["b", "c", "a"]), ["a", "b", "c"]);
+  assert.deepEqual(nums, [10, 2, 1]);
+});
+
+
+
 
 test("string and object helpers", () => {
   assert.equal(assembleStringWSpaces("a", false, undefined, "b"), "a b");
@@ -96,11 +158,15 @@ test("fetchData throws FetchError on bad status", async () => {
 
 test("types adapt to the property and reject mismatched values", () => {
   // @ts-expect-error `id` is a number
-  findOnArray(users, { property: "id", value: "1" });
+  findOnArray(users, "1", "id");
+  // @ts-expect-error without `by` the value must be a whole item
+  findOnArray(users, 1);
   // @ts-expect-error `active` is a boolean
-  filterArray(users, { property: "active", checkValue: { filterOp: "===", value: 1 } });
+  filterArray(users, { by: "active", op: "===", value: 1 });
   // @ts-expect-error unknown property
-  searchOnArray(users, { property: "name", value: 1 });
+  searchOnArray(users, 1, "name");
+  // @ts-expect-error numbers array
+  findOnArray([1, 2], "2");
 
   const cap: "Hello" = capitalize("hello");
   const doubled: Record<"a" | "b", string> = mapObj({ a: 1, b: 2 }, (v, { key }) => key + v);
@@ -108,13 +174,6 @@ test("types adapt to the property and reject mismatched values", () => {
   assert.deepEqual(doubled, { a: "a1", b: "b2" });
 });
 
-test("binary search insertion at edges", () => {
-  assert.deepEqual(addToArraySimple([], 1), [1]);
-  assert.deepEqual(addToArraySimple([2, 3], 1), [1, 2, 3]);
-  assert.deepEqual(addToArraySimple([1, 2], 3), [1, 2, 3]);
-  assert.equal(searchIndexOnArraySimple([1, 3], 2), -1);
-  assert.equal(searchIndexOnArraySimple([1, 3], 2, true), 1);
-});
 
 test("time conversions are consistent", () => {
   assert.equal(monthsToMs(12), yearsToMs(1));
@@ -131,12 +190,6 @@ test("fetchData leaves non-plain bodies untouched", async () => {
   assert.equal(init?.body, body);
 });
 
-test("sort by property and numerically in both orders", () => {
-  assert.deepEqual(sortByArray([{ n: 2 }, { n: 1 }, { n: 3 }], "n").map((x) => x.n), [1, 2, 3]);
-  assert.deepEqual(sortByArray([{ n: 2 }, { n: 1 }, { n: 3 }], "n", "desc").map((x) => x.n), [3, 2, 1]);
-  assert.deepEqual(sortNumberArray([10, 2, 1]), [1, 2, 10]);
-  assert.deepEqual(sortNumberArray([10, 2, 1], "desc"), [10, 2, 1]);
-});
 
 test("compareValues supports every operator", () => {
   assert.equal(compareValues(1, 1, "==="), true);
@@ -149,37 +202,8 @@ test("compareValues supports every operator", () => {
   assert.throws(() => compareValues(1, 1, "=="), /Unsupported filter operator: ==/);
 });
 
-test("filter without checkValue keeps truthy properties, filterSimple compares values", () => {
-  assert.deepEqual(filterArray(users, { property: "active" }).map((u) => u.id), [1, 3]);
-  assert.deepEqual(filterArray(users, { property: "active", exclude: true }).map((u) => u.id), [2]);
-  assert.deepEqual(filterArraySimple([1, 2, 3, 4], { checkValue: { filterOp: "<", value: 3 } }), [1, 2]);
-  assert.deepEqual(filterArraySimple([1, 2, 3], { checkValue: { filterOp: "===", value: 2 }, exclude: true }), [1, 3]);
-  assert.deepEqual(filterArraySimple([], { checkValue: { filterOp: ">", value: 0 } }), []);
-});
 
-test("find helpers return index, item or not-found values", () => {
-  assert.equal(findIndexOnArray(users, { property: "id", value: 3 }), 2);
-  assert.equal(findIndexOnArray(users, { property: "id", value: 9 }), -1);
-  assert.equal(findOnArray(users, { property: "id", value: 9 }), undefined);
-  assert.equal(findOnArray([{ a: 0 }, { a: 5 }], { property: "a" })?.a, 5);
-  assert.equal(findOnArraySimple(["a", "b"], "b"), "b");
-  assert.equal(findOnArraySimple(["a"], "z"), undefined);
-  assert.equal(findIndexOnArraySimple(["a", "b"], "b"), 1);
-});
 
-test("sorted add, search and remove by property and simple values", () => {
-  const list = [{ id: 1 }, { id: 3 }];
-  assert.deepEqual(addToArray(list, { id: 2 }, { property: "id", value: 2 }).map((x) => x.id), [1, 2, 3]);
-  assert.equal(addToArray(list, { id: 3 }, { property: "id", value: 3 }).length, 3);
-  assert.equal(searchIndexOnArray(list, { property: "id", value: 4 }), -1);
-  assert.equal(searchIndexOnArray(list, { property: "id", value: 4 }, true), 3);
-  assert.equal(searchOnArray(list, { property: "id", value: 4 }), undefined);
-  assert.equal(searchOnArraySimple([1, 2, 3], 2), 2);
-  assert.equal(searchOnArraySimple([1, 3], 2), undefined);
-  assert.deepEqual(removeFromArraySimple([1, 2, 3], 2), [1, 3]);
-  assert.deepEqual(removeFromArraySimple([1, 3], 2), [1, 3]);
-  assert.deepEqual(removeFromArray([{ id: 1 }], { property: "id", value: 5 }), [{ id: 1 }]);
-});
 
 test("object iteration passes value, key and index", () => {
   const seen: string[] = [];

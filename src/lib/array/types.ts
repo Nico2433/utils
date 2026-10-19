@@ -2,29 +2,21 @@ export type FilterOp = "===" | "!==" | "<=" | "<" | ">=" | ">";
 
 export type SortOrder = "asc" | "desc";
 
-export interface CheckValue<V> {
-  filterOp: FilterOp;
-  value: V;
-}
+/** Property used to compare items. `undefined` compares the items themselves. */
+export type By<T> = keyof T | undefined;
 
-// K is inferred from `property`, so `value` must match that property's type
-export interface Filter<T, K extends keyof T = keyof T> {
-  property: K;
-  checkValue?: CheckValue<T[K]>;
+/** Type of the compared value: `T[K]` when comparing by a property, `T` otherwise. */
+export type ByValue<T, K extends By<T>> = [K] extends [keyof T] ? T[K] : T;
+
+export interface Filter<T, K extends By<T> = undefined> {
+  by?: K;
+  op: FilterOp;
+  value: ByValue<T, K>;
+  /** Keeps the items that do NOT match. */
   exclude?: boolean;
 }
 
-export interface FilterSimple<T> {
-  checkValue: CheckValue<T>;
-  exclude?: boolean;
-}
-
-export interface Search<T, K extends keyof T = keyof T> {
-  property: K;
-  value: T[K];
-}
-
-export interface Find<T, K extends keyof T = keyof T> {
-  property: K;
-  value?: T[K];
+export interface Sort<T> {
+  by?: keyof T;
+  order?: SortOrder;
 }
