@@ -25,7 +25,7 @@
     "typecheck": "tsc",
     "lint": "eslint .",
     "test": "tsx --test \"src/**/*.test.ts\"",
-    "release": "pnpm typecheck && pnpm lint && pnpm test && pnpm build && commit-and-tag-version && git push --follow-tags && pnpm publish"
+    "check:package": "publint --strict && attw --pack"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
@@ -42,10 +42,11 @@
   },
   "homepage": "https://github.com/Nico2433/utils#readme",
   "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
     "@eslint/js": "^10.0.1",
     "@types/node": "^22.20.5",
-    "commit-and-tag-version": "^13.3.0",
     "eslint": "^10.13.0",
+    "publint": "^0.3.25",
     "tsup": "^9.0.0",
     "tsx": "^4.23.15",
     "typescript": "~6.0.3",
@@ -55,5 +56,6 @@
   "engines": {
     "node": ">=22"
   },
-  "type": "commonjs"
+  "type": "commonjs",
+  "packageManager": "pnpm@12.11.2"
 }
