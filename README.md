@@ -130,7 +130,3 @@ daysToMs(1); // 86_400_000
 ```
 
 Years use 365.25 days and months are 1/12 of a year, so `monthsToMs(12) === yearsToMs(1)`.
-
-## License
-
-MIT
