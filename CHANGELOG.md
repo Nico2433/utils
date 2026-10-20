@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [Conventional Commits](https://www.conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/Nico2433/utils/compare/v2.0.0...v2.0.1) (2026-10-20)
+
+
+### Miscellaneous Chores
+
+* release 2.0.1 ([b10f0f9](https://github.com/Nico2433/utils/commit/b10f0f9fc3ab80d27ac154f898fcfb49b037f795))
+
 ## [2.0.0](https://github.com/Nico2433/utils/compare/v1.0.11...v2.0.0) (2026-10-19)
 
 ### ⚠ BREAKING CHANGES
